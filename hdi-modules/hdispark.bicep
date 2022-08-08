@@ -5,6 +5,9 @@ param admin string = 'tdadmin'
 param snetName string
 @secure()
 param pw string 
+param sqlServerName string
+param hiveDbName string
+param ambDbName string
 
 
 // pull in storage account
@@ -16,12 +19,17 @@ resource snet 'Microsoft.Network/virtualNetworks/subnets@2022-01-01' existing = 
   name: snetName
 }
 
+resource ossprk 'Microsoft.Sql/servers@2022-02-01-preview' existing = {
+  name: sqlServerName
+}
+
 resource hdispark 'Microsoft.HDInsight/clusters@2021-06-01'={
   name: 'hdi01${baseName}'
   location: location
   dependsOn: [
     sa
     snet
+    ossprk
   ]
   properties:{
     clusterVersion: '4.0'
@@ -36,6 +44,26 @@ resource hdispark 'Microsoft.HDInsight/clusters@2021-06-01'={
            'restAuthCredential.isEnabled': true 
            'restAuthCredential.username': admin
            'restAuthCredential.password' : pw
+         }
+         'hive-site': {
+          'javax.jdo.option.ConnectionDriverName': 'com.microsoft.sqlserver.jdbc.SqlServerDriver'
+          'javax.jdo.option.ConnectionURL': 'jdbc:sqlserver://${ossprk.properties.fullyQualifiedDomainName};database=${hiveDbName};encrypt=true;trustServerCertificate=true;create=false;loginTimeout=300'
+          'javax.jdo.option.ConnectionUserName': admin
+          'javax.jdo.option.ConnectionPassword': pw
+         }
+         'hive-env' : {
+          hive_database : 'Existing MSSQL Server with sql auth'
+          hive_database_name: hiveDbName
+          hive_database_type: 'mssql'
+          hive_existing_mssql_server_database: hiveDbName
+          hive_existing_mssql_server_host : ossprk.properties.fullyQualifiedDomainName
+          hive_hostname: ossprk.properties.fullyQualifiedDomainName
+         }
+         'ambari-conf': {
+          'database-server': ossprk.properties.fullyQualifiedDomainName
+          'database-name': ambDbName
+          'database-user-name': admin
+          'database-user-password': pw
          }
        }
     }

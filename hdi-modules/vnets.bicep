@@ -36,3 +36,4 @@ resource snet2 'Microsoft.Network/virtualNetworks/subnets@2022-01-01'= {
 output sn1id string = snet1.id
 output sn2id string = snet2.id
 output sn1name string = snet1.name
+output vnetName string = vnet.name
