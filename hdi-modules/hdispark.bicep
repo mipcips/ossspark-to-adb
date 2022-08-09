@@ -8,6 +8,8 @@ param pw string
 param sqlServerName string
 param hiveDbName string
 param ambDbName string
+param vnetName string
+
 
 
 // pull in storage account
@@ -23,11 +25,16 @@ resource ossprk 'Microsoft.Sql/servers@2022-02-01-preview' existing = {
   name: sqlServerName
 }
 
+resource vnet 'Microsoft.Network/virtualNetworks@2022-01-01' existing={
+  name: vnetName
+}
+
 resource hdispark 'Microsoft.HDInsight/clusters@2021-06-01'={
   name: 'hdi01${baseName}'
   location: location
   dependsOn: [
     sa
+    vnet
     snet
     ossprk
   ]
@@ -78,6 +85,7 @@ resource hdispark 'Microsoft.HDInsight/clusters@2021-06-01'={
          }
       ]
     }
+
     computeProfile: {
       roles: [
         {
@@ -91,6 +99,10 @@ resource hdispark 'Microsoft.HDInsight/clusters@2021-06-01'={
               username: admin
               password: pw
             }
+          }
+          virtualNetworkProfile: {
+             id: vnet.id
+             subnet: snet.id
           }
   
         }
@@ -106,8 +118,34 @@ resource hdispark 'Microsoft.HDInsight/clusters@2021-06-01'={
               password: pw
             }
           }
+          virtualNetworkProfile:{
+            id: vnet.id
+            subnet: snet.id
+
+          }
+        }
+        {
+          name: 'zookeepernode'
+          minInstanceCount: 1
+          targetInstanceCount: 3
+          hardwareProfile: {
+            vmSize: 'Small'
+          }
+          osProfile: {
+            linuxOperatingSystemProfile: {
+              username: admin
+              password: pw
+            }
+          
+          }
+          virtualNetworkProfile: {
+            id: vnet.id
+            subnet: snet.id
+          }
         }
       ]
     }
+    
   }
+  
 }

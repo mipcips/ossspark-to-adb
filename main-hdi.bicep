@@ -36,7 +36,7 @@ module sqls 'hdi-modules/sql.bicep' = {
   }
 }
 
-
+/*
 module hdi 'hdi-modules/hdispark.bicep' = {
   name: 'hdiclustoadbsas'
   params: {
@@ -49,5 +49,8 @@ module hdi 'hdi-modules/hdispark.bicep' = {
     hiveDbName: sqls.outputs.hiveDbName
     sqlServerName: sqls.outputs.ossprkName
     admin: adminName
+    vnetName: vnets.outputs.vnetName
   }
 }
+
+*/
