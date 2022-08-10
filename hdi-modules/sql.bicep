@@ -3,20 +3,14 @@ param location string
 param admin string
 @secure()
 param pw string
-param vnetName string
-
+param vnetid string
+param snetid string
 
 var cleanedBaseName = replace(baseName, '-', '')
 
-resource vnets 'Microsoft.Network/virtualNetworks@2022-01-01' existing={
-  name: vnetName
-}
 
 resource osssprk 'Microsoft.Sql/servers@2022-02-01-preview'={
   name: 'osssprk${cleanedBaseName}'
-  dependsOn: [
-    vnets
-  ]
   location: location
   properties: {
     administratorLogin: admin
@@ -67,16 +61,16 @@ resource ambdb 'Microsoft.Sql/servers/databases@2022-02-01-preview'= {
 }
 
 
-resource pesql 'Microsoft.Network/privateEndpoints@2022-01-01' = {
-  name: 'pe${cleanedBaseName}'
+resource pesql 'Microsoft.Network/privateEndpoints@2021-08-01' = {
+  name: 'peSql${cleanedBaseName}'
   location: location
   properties: {
     subnet: {
-      id: vnets.properties.subnets[0].id
+      id: snetid
     } 
     privateLinkServiceConnections: [
      {
-       name: 'pe${cleanedBaseName}'
+       name: 'peSql${cleanedBaseName}'
        properties: {
          privateLinkServiceId: osssprk.id
          groupIds: [
@@ -93,9 +87,7 @@ resource pDnsZoneSql 'Microsoft.Network/privateDnsZones@2020-06-01'={
   name: 'privatelink${environment().suffixes.sqlServerHostname}'
   location: 'global'
   properties: { }
-  dependsOn: [
-   vnets 
-  ]
+
 }
 
 resource pDnsZoneSqlLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01'={
@@ -105,12 +97,12 @@ resource pDnsZoneSqlLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@
   properties: {
     registrationEnabled: false
     virtualNetwork: {
-      id: vnets.id
+      id: vnetid
     }
   }
 }
 
-resource pESqlDnsGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2022-01-01'= {
+resource pESqlDnsGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2021-08-01'= {
   name: '${pesql.name}/pESqlDnsGroupName'
   properties: {
      privateDnsZoneConfigs: [

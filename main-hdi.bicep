@@ -18,21 +18,30 @@ module vnets 'hdi-modules/vnets.bicep'= {
 
 module sas 'hdi-modules/sa.bicep' = {
   name: 'hditoadbsas'
+  dependsOn:[
+    vnets
+  ]
   params: {
     baseName: baseName
     location: location
+    snetId: vnets.outputs.sn1id
+    vnetId: vnets.outputs.vnetid
   }
 }
 
 
 module sqls 'hdi-modules/sql.bicep' = {
   name: 'htitoadbsqls'
+  dependsOn:[
+    vnets
+  ]
   params: {
     admin: adminName
     baseName: baseName
     location: location
     pw: 'Tested2222**'
-    vnetName: vnets.outputs.vnetName
+    vnetid: vnets.outputs.vnetid
+    snetid: vnets.outputs.sn1id
   }
 }
 
