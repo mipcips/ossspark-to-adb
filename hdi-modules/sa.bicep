@@ -101,7 +101,7 @@ resource blobpDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
 }
 
 resource peDns 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2021-08-01' = {
-  name: '${peBlob.name}/blob-PrivateDnsZoneGroup}'
+  name: '${peBlob.name}/blob-PrivateDnsZoneGroup'
   properties: {
     privateDnsZoneConfigs: [
       {
