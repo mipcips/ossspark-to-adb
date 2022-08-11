@@ -119,3 +119,4 @@ resource pESqlDnsGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@
 output ossprkName string = osssprk.name
 output hiveDbName string = hivedb.name
 output ambariDbName string = ambdb.name
+output sqlServerFQDN string = osssprk.properties.fullyQualifiedDomainName

@@ -20,6 +20,7 @@ module sas 'hdi-modules/sa.bicep' = {
   name: 'hditoadbsas'
   dependsOn:[
     vnets
+    sqls
   ]
   params: {
     baseName: baseName
@@ -34,6 +35,7 @@ module sqls 'hdi-modules/sql.bicep' = {
   name: 'htitoadbsqls'
   dependsOn:[
     vnets
+    
   ]
   params: {
     admin: adminName
@@ -45,21 +47,28 @@ module sqls 'hdi-modules/sql.bicep' = {
   }
 }
 
-/*
+
 module hdi 'hdi-modules/hdispark.bicep' = {
   name: 'hdiclustoadbsas'
+  dependsOn: [
+    vnets
+    sas
+    sqls
+  ]
   params: {
     baseName: baseName
     location: location
     pw: 'Tested2222**'
-    saName: sas.outputs.saName
-    snetName: vnets.outputs.sn1name
     ambDbName: sqls.outputs.ambariDbName
     hiveDbName: sqls.outputs.hiveDbName
-    sqlServerName: sqls.outputs.ossprkName
     admin: adminName
-    vnetName: vnets.outputs.vnetName
+    saBlobUrl: sas.outputs.saBlobUrl
+    snetId: vnets.outputs.sn2id
+    vnetId: vnets.outputs.vnetid
+    sqlServerFQDN: sqls.outputs.sqlServerFQDN
+    saKey: sas.outputs.saKey
+    saId: sas.outputs.said
   }
 }
 
-*/
+

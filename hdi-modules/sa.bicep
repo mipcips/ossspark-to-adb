@@ -17,6 +17,7 @@ resource sa 'Microsoft.Storage/storageAccounts@2021-09-01'={
      isHnsEnabled: false
      accessTier: 'Hot'
      allowBlobPublicAccess: false
+     publicNetworkAccess: 'Disabled'
      encryption: {
       keySource:  'Microsoft.Storage'
       requireInfrastructureEncryption: false
@@ -159,3 +160,6 @@ resource filePDnsZoneVnetLink 'Microsoft.Network/privateDnsZones/virtualNetworkL
 
 output said string = sa.id
 output saName string = sa.name
+output saBlobUrl string = sa.properties.primaryEndpoints.blob
+output saPrivateBlobUrl string = '${sa.name}.${blobpDnsZone.name}'
+output saKey string = sa.listKeys('2021-08-01').keys[0].value

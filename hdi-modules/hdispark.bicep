@@ -1,43 +1,23 @@
 param baseName string
 param location string
-param saName string
+param vnetId string
+param snetId string
 param admin string = 'tdadmin'
-param snetName string
 @secure()
 param pw string 
-param sqlServerName string
+param sqlServerFQDN string
 param hiveDbName string
 param ambDbName string
-param vnetName string
+param saBlobUrl string
+param saKey string
+param saId string
 
 
-
-// pull in storage account
-resource sa 'Microsoft.Storage/storageAccounts@2021-09-01' existing = {
-  name: saName
-}
-
-resource snet 'Microsoft.Network/virtualNetworks/subnets@2022-01-01' existing = {
-  name: snetName
-}
-
-resource ossprk 'Microsoft.Sql/servers@2022-02-01-preview' existing = {
-  name: sqlServerName
-}
-
-resource vnet 'Microsoft.Network/virtualNetworks@2022-01-01' existing={
-  name: vnetName
-}
 
 resource hdispark 'Microsoft.HDInsight/clusters@2021-06-01'={
   name: 'hdi01${baseName}'
   location: location
-  dependsOn: [
-    sa
-    vnet
-    snet
-    ossprk
-  ]
+
   properties:{
     clusterVersion: '4.0'
     osType: 'Linux'
@@ -54,7 +34,7 @@ resource hdispark 'Microsoft.HDInsight/clusters@2021-06-01'={
          }
          'hive-site': {
           'javax.jdo.option.ConnectionDriverName': 'com.microsoft.sqlserver.jdbc.SqlServerDriver'
-          'javax.jdo.option.ConnectionURL': 'jdbc:sqlserver://${ossprk.properties.fullyQualifiedDomainName};database=${hiveDbName};encrypt=true;trustServerCertificate=true;create=false;loginTimeout=300'
+          'javax.jdo.option.ConnectionURL': 'jdbc:sqlserver://${sqlServerFQDN};database=${hiveDbName};encrypt=true;trustServerCertificate=true;create=false;loginTimeout=300'
           'javax.jdo.option.ConnectionUserName': admin
           'javax.jdo.option.ConnectionPassword': pw
          }
@@ -63,11 +43,11 @@ resource hdispark 'Microsoft.HDInsight/clusters@2021-06-01'={
           hive_database_name: hiveDbName
           hive_database_type: 'mssql'
           hive_existing_mssql_server_database: hiveDbName
-          hive_existing_mssql_server_host : ossprk.properties.fullyQualifiedDomainName
-          hive_hostname: ossprk.properties.fullyQualifiedDomainName
+          hive_existing_mssql_server_host : sqlServerFQDN
+          hive_hostname: sqlServerFQDN
          }
          'ambari-conf': {
-          'database-server': ossprk.properties.fullyQualifiedDomainName
+          'database-server': sqlServerFQDN
           'database-name': ambDbName
           'database-user-name': admin
           'database-user-password': pw
@@ -77,15 +57,19 @@ resource hdispark 'Microsoft.HDInsight/clusters@2021-06-01'={
     storageProfile: {
       storageaccounts: [
          {
-          name: replace(replace(sa.properties.primaryEndpoints.blob, 'https://', ''), '/', '')
+          name: replace(replace(saBlobUrl, 'https://', ''), '/', '')
           isDefault: true
           container: 'hdi01${baseName}'
-          key: sa.listKeys('2021-08-01').keys[0].value
+          resourceId: saId
+          key: saKey
           
          }
       ]
     }
-
+    networkProperties: {
+       resourceProviderConnection: 'Outbound'
+       privateLink:'Enabled'
+    }
     computeProfile: {
       roles: [
         {
@@ -101,8 +85,8 @@ resource hdispark 'Microsoft.HDInsight/clusters@2021-06-01'={
             }
           }
           virtualNetworkProfile: {
-             id: vnet.id
-             subnet: snet.id
+             id: vnetId
+             subnet: snetId
           }
   
         }
@@ -119,8 +103,8 @@ resource hdispark 'Microsoft.HDInsight/clusters@2021-06-01'={
             }
           }
           virtualNetworkProfile:{
-            id: vnet.id
-            subnet: snet.id
+            id: vnetId
+            subnet: snetId
 
           }
         }
@@ -139,8 +123,8 @@ resource hdispark 'Microsoft.HDInsight/clusters@2021-06-01'={
           
           }
           virtualNetworkProfile: {
-            id: vnet.id
-            subnet: snet.id
+            id: vnetId
+            subnet: snetId
           }
         }
       ]
