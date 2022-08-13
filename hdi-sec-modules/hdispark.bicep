@@ -12,11 +12,9 @@ param saBlobUrl string
 param saName string
 param saId string
 
-
 resource sa 'Microsoft.Storage/storageAccounts@2021-08-01' existing={
   name: saName
 }
-
 
 resource hdispark 'Microsoft.HDInsight/clusters@2021-06-01'={
   name: 'hdi01${baseName}'
@@ -70,7 +68,10 @@ resource hdispark 'Microsoft.HDInsight/clusters@2021-06-01'={
          }
       ]
     }
-
+    networkProperties: {
+       resourceProviderConnection: 'Outbound'
+       privateLink:'Enabled'
+    }
     computeProfile: {
       roles: [
         {

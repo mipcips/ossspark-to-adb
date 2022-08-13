@@ -1,15 +1,13 @@
 param location string = resourceGroup().location
 param environment string = 'dev'
-@secure()
-param pw string
-param adbMngResourceGroupName string
 
 var baseName = 'hditoadb-${environment}'
 var adminName = 'tdadmin'
 
 
 
-module vnets 'hdi-modules/vnets.bicep'= {
+
+module vnets 'hdi-sec-modules/vnets.bicep'= {
   name: 'hditoadbvnets'
   params: {
     baseName: baseName
@@ -18,7 +16,7 @@ module vnets 'hdi-modules/vnets.bicep'= {
 }
 
 
-module sas 'hdi-modules/sa.bicep' = {
+module sas 'hdi-sec-modules/sa.bicep' = {
   name: 'hditoadbsas'
   dependsOn:[
     vnets
@@ -27,27 +25,30 @@ module sas 'hdi-modules/sa.bicep' = {
   params: {
     baseName: baseName
     location: location
+    snetId: vnets.outputs.sn1id
+    vnetId: vnets.outputs.vnetid
   }
 }
 
 
-module sqls 'hdi-modules/sql.bicep' = {
+module sqls 'hdi-sec-modules/sql.bicep' = {
   name: 'htitoadbsqls'
   dependsOn:[
     vnets
     
   ]
   params: {
+    admin: adminName
     baseName: baseName
     location: location
-    admin: adminName
-    pw: pw
-  
+    pw: 'Tested2222**'
+    vnetid: vnets.outputs.vnetid
+    snetid: vnets.outputs.sn1id
   }
 }
 
 
-module hdi 'hdi-modules/hdispark.bicep' = {
+module hdi 'hdi-sec-modules/hdispark.bicep' = {
   name: 'hdiclustoadbsas'
   dependsOn: [
     vnets
@@ -57,31 +58,17 @@ module hdi 'hdi-modules/hdispark.bicep' = {
   params: {
     baseName: baseName
     location: location
-    pw: pw
+    pw: 'Tested2222**'
     ambDbName: sqls.outputs.ambariDbName
     hiveDbName: sqls.outputs.hiveDbName
     admin: adminName
     saBlobUrl: sas.outputs.saBlobUrl
-    snetId: vnets.outputs.hdinetId
+    snetId: vnets.outputs.sn2id
     vnetId: vnets.outputs.vnetid
     sqlServerFQDN: sqls.outputs.sqlServerFQDN
-    saName: sas.outputs.saName
+    saKey: sas.outputs.saKey
     saId: sas.outputs.said
   }
 }
 
 
-// module adb 'hdi-modules/adb.bicep' = {
-//   name: 'adbwshditoadb'
-//   dependsOn: [
-//     vnets
-//   ]
-//   params: {
-//     baseName: baseName
-//     location: location
-//     privSnetId: vnets.outputs.adbpriId
-//     pubSnetId: vnets.outputs.adbPubId
-//     vnetId: vnets.outputs.vnetid
-//     adbMngResourceGroupName: adbMngResourceGroupName
-//   }
-// }
