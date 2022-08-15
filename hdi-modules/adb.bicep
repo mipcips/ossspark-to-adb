@@ -1,8 +1,8 @@
 param baseName string
 param location string 
 param vnetId string
-param pubSnetId string
-param privSnetId string
+param pubSnetName string
+param privSnetName string
 param adbMngResourceGroupName string
 
 
@@ -24,10 +24,10 @@ resource adb 'Microsoft.Databricks/workspaces@2022-04-01-preview' = {
         value: vnetId
       }
       customPrivateSubnetName: {
-        value: privSnetId
+        value: privSnetName
       }
       customPublicSubnetName: {
-        value: pubSnetId
+        value: pubSnetName
       }
     }
   }

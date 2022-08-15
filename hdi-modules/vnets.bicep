@@ -52,8 +52,6 @@ resource snet3 'Microsoft.Network/virtualNetworks/subnets@2021-08-01'= {
   ]
   properties: {
     addressPrefix: '192.168.23.128/26' 
-    privateEndpointNetworkPolicies: 'Disabled'
-    privateLinkServiceNetworkPolicies: 'Disabled'
     networkSecurityGroup: {
       id: nsgadb.id
     }
@@ -77,8 +75,6 @@ resource snet4 'Microsoft.Network/virtualNetworks/subnets@2021-08-01'= {
   ]
   properties: {
     addressPrefix: '192.168.23.192/26' 
-    privateEndpointNetworkPolicies: 'Disabled'
-    privateLinkServiceNetworkPolicies: 'Disabled'
     networkSecurityGroup: {
       id: nsgadb.id
     }
@@ -91,6 +87,12 @@ resource snet4 'Microsoft.Network/virtualNetworks/subnets@2021-08-01'= {
       }
     ]
   }
+}
+
+resource nsgvm 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
+  name: 'nsgvm-${baseName}'
+  location: location
+
 }
 
 resource nsghdi 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
@@ -223,10 +225,14 @@ resource nsgadb 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
   }
 }
 
+
+
+
 output hdinetId string = snet1.id
 output genPNetId string = snet2.id
-output adbpriId string = snet3.id
-output adbPubId string = snet4.id
+output adbpriName string = snet3.name
+output adbPubName string = snet4.name
 output hdiNetName string = snet1.name
 output vnetName string = vnet.name
 output vnetid string = vnet.id
+output nsgVmId string = nsgvm.id

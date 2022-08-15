@@ -71,17 +71,30 @@ module hdi 'hdi-modules/hdispark.bicep' = {
 }
 
 
-// module adb 'hdi-modules/adb.bicep' = {
-//   name: 'adbwshditoadb'
-//   dependsOn: [
-//     vnets
-//   ]
-//   params: {
-//     baseName: baseName
-//     location: location
-//     privSnetId: vnets.outputs.adbpriId
-//     pubSnetId: vnets.outputs.adbPubId
-//     vnetId: vnets.outputs.vnetid
-//     adbMngResourceGroupName: adbMngResourceGroupName
-//   }
-// }
+module vm 'hdi-modules/vm.bicep' = {
+  name: 'vmhditoadb'
+  params: {
+    adminPw: pw
+    adminUser: adminName
+    baseName: baseName
+    genPSubId: vnets.outputs.genPNetId
+    location: location
+    nsgId: vnets.outputs.nsgVmId
+  }
+}
+
+
+module adb 'hdi-modules/adb.bicep' = {
+  name: 'adbwshditoadb'
+  dependsOn: [
+    vnets
+  ]
+  params: {
+    baseName: baseName
+    location: location
+    privSnetName: vnets.outputs.adbpriName
+    pubSnetName: vnets.outputs.adbPubName
+    vnetId: vnets.outputs.vnetid
+    adbMngResourceGroupName: adbMngResourceGroupName
+  }
+}
