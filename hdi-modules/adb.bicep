@@ -3,12 +3,14 @@ param location string
 param vnetId string
 param pubSnetName string
 param privSnetName string
-param adbMngResourceGroupName string
 
+
+var workSpaceName = 'adb-${baseName}'
+var mngResourceGroupName = 'databricks-rg-${workSpaceName}-${uniqueString(workSpaceName, resourceGroup().id)}'
 
 resource mngResGroup 'Microsoft.Resources/resourceGroups@2021-04-01'  existing = {
   scope: subscription()
-  name: adbMngResourceGroupName
+  name: mngResourceGroupName
 }
 
 resource adb 'Microsoft.Databricks/workspaces@2022-04-01-preview' = {

@@ -28,22 +28,21 @@ resource nic1 'Microsoft.Network/networkInterfaces@2022-01-01'={
   name: 'nic1-${baseName}'
   location: location
   properties:{
+    networkSecurityGroup: {
+       id: nsgId
+    }
     ipConfigurations: [
        {
         name: 'pip1'
         properties: {
            subnet:  {
              id: genPSubId
-             properties: {
-               networkSecurityGroup: {
-                 id: nsgId
-               }
-             }
            }
            privateIPAllocationMethod: 'Dynamic'
-
+           
            publicIPAddress: {
             id: pubIp1.id
+
            }
         }
        }
@@ -68,9 +67,9 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01'={
         }
       }
       imageReference: {
-         publisher:'Canonical'
-         offer: 'UbuntuServer'
-         sku: '18.04-LTS'
+         publisher:'MicrosoftWindowsServer'
+         offer: 'WindowsServer'
+         sku: '2022-DataCenter'
          version: 'latest'
       }
       
@@ -85,7 +84,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01'={
     osProfile: {
        adminPassword: adminPw
        adminUsername: adminUser
-       computerName: 'vm1-${baseName}'
+       computerName: 'jh-${baseName}'
        }
     }
 }

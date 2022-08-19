@@ -1,7 +1,7 @@
 param baseName string
 param location string
 
-resource vnet 'Microsoft.Network/virtualNetworks@2021-08-01'={
+resource vnet 'Microsoft.Network/virtualNetworks@2021-03-01'={
   name: 'vneta-${baseName}'
   location: location
   properties: {
@@ -16,7 +16,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-08-01'={
 
 
 
-resource snet1 'Microsoft.Network/virtualNetworks/subnets@2021-08-01'={
+resource snet1 'Microsoft.Network/virtualNetworks/subnets@2021-03-01'={
   name: 'hdi-${baseName}'
   parent: vnet
   properties: {
@@ -30,7 +30,7 @@ resource snet1 'Microsoft.Network/virtualNetworks/subnets@2021-08-01'={
 }
 
 
-resource snet2 'Microsoft.Network/virtualNetworks/subnets@2021-08-01'= {
+resource snet2 'Microsoft.Network/virtualNetworks/subnets@2021-03-01'= {
   name: 'gen-${baseName}'
   parent: vnet
   dependsOn: [
@@ -44,7 +44,7 @@ resource snet2 'Microsoft.Network/virtualNetworks/subnets@2021-08-01'= {
   }
 }
 
-resource snet3 'Microsoft.Network/virtualNetworks/subnets@2021-08-01'= {
+resource snet3 'Microsoft.Network/virtualNetworks/subnets@2021-03-01'= {
   name: 'adbpri-${baseName}'
   parent: vnet
   dependsOn: [
@@ -66,7 +66,7 @@ resource snet3 'Microsoft.Network/virtualNetworks/subnets@2021-08-01'= {
   }
 }
 
-resource snet4 'Microsoft.Network/virtualNetworks/subnets@2021-08-01'= {
+resource snet4 'Microsoft.Network/virtualNetworks/subnets@2021-03-01'= {
   name: 'adbpub-${baseName}'
   parent: vnet
   dependsOn: [
@@ -89,13 +89,13 @@ resource snet4 'Microsoft.Network/virtualNetworks/subnets@2021-08-01'= {
   }
 }
 
-resource nsgvm 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
+resource nsgvm 'Microsoft.Network/networkSecurityGroups@2021-03-01' = {
   name: 'nsgvm-${baseName}'
   location: location
 
 }
 
-resource nsghdi 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
+resource nsghdi 'Microsoft.Network/networkSecurityGroups@2021-03-01' = {
   name: 'nsg-${baseName}'
   location: location
   properties: {
@@ -132,7 +132,7 @@ resource nsghdi 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
 }
 
 
-resource nsgadb 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
+resource nsgadb 'Microsoft.Network/networkSecurityGroups@2021-03-01' = {
   name: 'nsgadb-${baseName}'
   location: location
   properties: {

@@ -41,6 +41,17 @@ resource snet2 'Microsoft.Network/virtualNetworks/subnets@2021-08-01'= {
     networkSecurityGroup: {
       id: nsghdi.id
     }
+    serviceEndpoints: [
+      {
+        service:'Microsoft.KeyVault'
+      }
+      {
+        service:'Microsoft.Sql'
+      }
+      {
+        service:'Microsoft.Storage'
+      }
+    ]
   }
 }
 

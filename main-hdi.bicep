@@ -2,7 +2,7 @@ param location string = resourceGroup().location
 param environment string = 'dev'
 @secure()
 param pw string
-param adbMngResourceGroupName string
+
 
 var baseName = 'hditoadb-${environment}'
 var adminName = 'tdadmin'
@@ -95,6 +95,5 @@ module adb 'hdi-modules/adb.bicep' = {
     privSnetName: vnets.outputs.adbpriName
     pubSnetName: vnets.outputs.adbPubName
     vnetId: vnets.outputs.vnetid
-    adbMngResourceGroupName: adbMngResourceGroupName
   }
 }
