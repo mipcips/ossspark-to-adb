@@ -17,7 +17,7 @@ resource sa 'Microsoft.Storage/storageAccounts@2021-08-01' existing={
 }
 
 resource hdispark 'Microsoft.HDInsight/clusters@2021-06-01'={
-  name: 'hdi01${baseName}'
+  name: 'spark${baseName}'
   location: location
 
   properties:{

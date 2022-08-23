@@ -37,7 +37,8 @@ resource nic1 'Microsoft.Network/networkInterfaces@2022-01-01'={
         properties: {
            subnet:  {
              id: genPSubId
-           }
+
+            }
            privateIPAllocationMethod: 'Dynamic'
            
            publicIPAddress: {
