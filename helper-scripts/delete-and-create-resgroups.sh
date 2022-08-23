@@ -1,7 +1,6 @@
 #! bin/bash
 location='westus'
 baseResourceGroupName='rg-wus-hditoadb'
-mngResourceGroupName='rg-wus-adbmng-hditoadb'
 
 
 echo "deleting resource groups"
