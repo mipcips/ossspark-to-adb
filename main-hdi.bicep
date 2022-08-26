@@ -73,6 +73,9 @@ module hdi 'hdi-modules/hdispark.bicep' = {
 
 module vm 'hdi-modules/vm.bicep' = {
   name: 'vmhditoadb'
+  dependsOn: [
+    sqls
+  ]
   params: {
     adminPw: pw
     adminUser: adminName
@@ -88,6 +91,7 @@ module adb 'hdi-modules/adb.bicep' = {
   name: 'adbwshditoadb'
   dependsOn: [
     vnets
+    sqls
   ]
   params: {
     baseName: baseName

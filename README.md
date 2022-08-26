@@ -1,17 +1,22 @@
 # Hadoop to Databricks Migration
 
-## Lab copy data
+## Lab 'copy data from HDI to delta via CETAS'
 ---
+
+### Clone the Repo
+---
+- Go to https://github.com/mipcips/https://github.com/mipcips/ossspark-to-adb and clone the repo to a local directory either on Windows WSL or a Linux/MacOs workstation
+- CD into the newly created directory and open VSCode by typing code .
+
 
 ### Install Lab Environment
 ---
-- by creating a resource Groupp p.ex. rg-wus-hditoadb, then
-- by running
-az deployment group create \
-    -g 'resource group you created earlier' \
-    --template-file ./main-hdi.bicep \
-    -n hditoadb \
-    --parameters pw='pw' adbMngResourceGroupName='resource group you created earlier'
+
+> in order for the next part to work, you have to be logged in (via azure-cli) to the subscription you want to install the lab environment into. the lab environment is going to be installed into one resource group. 
+
+- click on /helper-scripts and open delete-and-createresgroups.sh. Edit the the name of the resource group and its location as well as the password at the top of the file. Currently it is set to westus and rg-wus-hditoadb and . Adjust these to your preference. The password is going to be the password for SQL Server, HDInsight clusteradmin and VM. 
+
+- now open a command prompt and execute bash helper/delete-and-createresgroups.sh. This script deletes the resource group, with the name, you set in the bash script, creates it anew and starts the deployment of the lab
 
 - with the bicep a virtual machine is created named 'vm1-hditoadb-dev' to which you will connect via just in time access (JITA). In order to do that, you can either go to the configuration node in Azure Portal of the vm or go to the vm in Azure portal, click on 'Connect' RDP and click on button 'Request Access'. This should open a RDP session to this VM
 
