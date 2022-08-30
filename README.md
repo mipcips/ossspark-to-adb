@@ -70,6 +70,39 @@
 
 > After each of the cells have been run successfully, you should have census data 'population by county' in the cluster folder '/example/popbycorc' as an orc file. You could verify by going to the ssh session to the head node, you created earlier and then entering 'hdfs dfs -ls /example'. 
 
+- to create a Hive table, open either beeline in the ssh session to the headnode or Hive view 2 from Ambari
+- execute the hive script '/notebooks/hdi/create-table.hql'
+
+> if you get an access denied error message, especially when you wanted to create the table, the hive user doesn't have the necessary permissions. In order to permit the hive user enter the following command in the ssh session to the head node 'hdfs dfs -chown -R hive:Hadoop /example' 
 
 
+## Databricks Part
+---
 
+In this lab, you will create a databricks cluster, connect it to the storage account and the Hive metastore of the HDI cluster and then copy the population by country table to another location on the storage account as Delta table via CETAS.
+
+- in Azure Portal, open Databricks Service and 'Launch Workspace'.
+- go to 'Compute' and create a Single Node Cluster by
+  - clicking 'Single Node' radio at the bottom and leaving everything as default
+  - click 'create cluster'
+- wait until the cluster is running
+- go to 'Workspace' and import from 'notebooks/setup_metastore_jars.dbc'
+- after opening the notebook, make sure, that username and password, as well as the jdbc connection string is correct and reflects your environment.To find the jdbc connectionstring to the hive database:
+  - in Azure Portal, in your Resource Group, click on 'hivedbhditoadbdev'
+  - click on 'Connection strings' on the left
+  - click on the 'JDBC' tab; copy everything up to and excluding user=...
+- attach the notebook to the newly created cluster and run it. The notebook is going to create a bash script file in '/databricks/scripts/' named 'external-metastore.sh' 
+- from the second executed cell, copy the path contents
+- go to your cluster and click 'Edit' in the right upper corner
+- open 'Advanced options'
+- click the 'Init Scripts' tab
+- copy the whole path, that you copied, after dbfs:/ then delete the second occurence of dbfs:/ off the string
+- click 'Add'
+- click 'Confirm and restart'
+
+> the cluster restarts and loads the necessary jar files from maven as well as sets its configuration to point to the hive metastore of the HDI cluster
+
+- import the notebook 'notebooks/hdi-to-adb-lab2.dbc'
+- open it and attach it to the cluster
+- run the first cell to check the connection to the Hive metastore server (should read something like connection succeeded)
+- in the second cell, you have to storage account name and access key (you get all these values from the Azure Portal and the storage account in your resource group)
