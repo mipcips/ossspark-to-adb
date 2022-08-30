@@ -1,6 +1,6 @@
 #! bin/bash
-location='westus'
-baseResourceGroupName='rg-wus-hditoadb'
+location='eastus'
+baseResourceGroupName='rg-eus-hditoadb'
 password='Tested2222**'
 
 echo "deleting resource groups"
