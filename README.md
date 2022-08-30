@@ -46,6 +46,9 @@
   
 ! You installed your lab environment. Congratulations !
 
+
+![lab-environment](/images/hadoop-to-adb-mig.png)
+
 ### Download data by executing a Notebook 
 ---
 
