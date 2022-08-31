@@ -76,7 +76,7 @@
 > if you get an access denied error message, especially when you wanted to create the table, the hive user doesn't have the necessary permissions. In order to permit the hive user enter the following command in the ssh session to the head node 'hdfs dfs -chown -R hive:Hadoop /example' 
 
 
-## Databricks Part
+### Databricks Part
 ---
 
 In this lab, you will create a databricks cluster, connect it to the storage account and the Hive metastore of the HDI cluster and then copy the population by country table to another location on the storage account as Delta table via CETAS.
@@ -106,3 +106,6 @@ In this lab, you will create a databricks cluster, connect it to the storage acc
 - open it and attach it to the cluster
 - run the first cell to check the connection to the Hive metastore server (should read something like connection succeeded)
 - in the second cell, you have to storage account name and access key (you get all these values from the Azure Portal and the storage account in your resource group)
+
+
+
