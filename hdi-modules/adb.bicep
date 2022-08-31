@@ -31,6 +31,9 @@ resource adb 'Microsoft.Databricks/workspaces@2022-04-01-preview' = {
       customPublicSubnetName: {
         value: pubSnetName
       }
+      enableNoPublicIp: {
+        value: true
+      }
     }
   }
 }
