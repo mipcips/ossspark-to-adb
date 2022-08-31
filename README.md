@@ -1,6 +1,6 @@
 # Hadoop to Databricks Migration
 
-## Lab 'copy data from HDI to delta via CETAS'
+## Lab 1 'copy data from HDI to delta via CETAS'
 ---
 
 ### Clone the Repo
@@ -107,5 +107,26 @@ In this lab, you will create a databricks cluster, connect it to the storage acc
 - run the first cell to check the connection to the Hive metastore server (should read something like connection succeeded)
 - in the second cell, you have to storage account name and access key (you get all these values from the Azure Portal and the storage account in your resource group)
 
+
+
+## Lab 2 - Migrate Spark Code
+---
+
+### Run legacy code on HDI
+
+- goto jupyter environment on Spark cluster 'https://spark-cluster-int.azurehdinsight.net/jupyter'
+- upload notebook from 'ossspark-to-adb/notebooks/hdi/LegacyContext.ipynb'
+- run notebook cell by cell and notice it's working
+
+---
+
+- goto Databricks environment and create/start a cluster if not yet already done so
+- upload notebook from /notebooks/hdi/LegacyContext.ipynb and run cell by cell
+- in cell 3 (sc = SparkContext()) notice the error message: VelueError: Cannot run multiple sparkContexts at once
+- change the code in cell 3 to 'sc = SparkContext.getOrCreate(conf=conf) and
+- run the notebook cell by cell and notice it's running successfully
+- in the last line, when executing sc.stop() notice the message 'The Spark Context has stopped and the driver is restarting. Your notebook will be automatically attached.'
+
+> You do not want to stop the context or spark session, since it's affects ALL users of the cluster (restarts the driver node)
 
 
