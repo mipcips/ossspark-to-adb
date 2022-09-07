@@ -1,5 +1,8 @@
 # Hadoop to Databricks Migration
 
+
+# Spark Module Labs
+
 ## Lab 1 'copy data from HDI to delta via CETAS'
 ---
 
@@ -128,5 +131,50 @@ In this lab, you will create a databricks cluster, connect it to the storage acc
 - in the last line, when executing sc.stop() notice the message 'The Spark Context has stopped and the driver is restarting. Your notebook will be automatically attached.'
 
 > You do not want to stop the context or spark session, since it's affects ALL users of the cluster (restarts the driver node)
+   
+   
+
+---
+
+---
+
+# Ranger Module Labs
+
+## Lab 1 Table Access Control in Databricks
+---
+
+> you need a Premium plan workspace. AlsoTable Access control has to be enabled in 'Settings' - 'Admin Console' - 'workspace settings' - 'Access Control\Table Access Control: Enabled'
+
+### Create a cluster and add a second user to the workspace
+---
+
+- log on to your workspace as the admin. This will be called the 1st browser session
+- click 'Compute' and then 'Create Cluster'
+- make the following settings:
+  - Access Mode: Shared
+  - Runtime: at least 10.4 LTS or higher
+  - Autoscaling: unchecked
+  - Workers: 1
+- click 'Create Cluster'
+- add a second user to the workspace p.ex. 'hugo' (needs to be existing in AAD)
+  - go to 'Settings' - 'Admin Console' - 'Users' - 'Add User' and enter the upn of the newly added user
+  - for the newly added user check 'Workspace Access' and 'Databricks SQL Access' (don't check 'Allow unrestricted cluster creation' and 'Admin')
+  - either give this new user then Reader permissions to the Resource Group or give him/her the ADB workspace url
+  - in a new private/incognito session of the browser login as this user to the workspace by either going to https://portal.azure.com and entering the password or entering the ADB workspace url in the browser address input box
+  - in this 2nd browser session click in 'Data Science Engineering' on 'SQL'
+  - click on 'SQL Warehouses' and here click on 'Start' and wait for the warehouse to be started
+<br />
+<br />
+    
+### Create a table and verify access, grant access
+---
+  
+  - click on 'Query' and enter 'Select * from silver' -> notice the error message "User does not have permission SELECT on table 'default'.'silver', which was expected
+  - in the 1st browser session click on 'Data' - 'silver' - 'Permissions', then click on 'Grant' in the dialog in the input box ('type to add...') add hugo@... and check 'SELECT', click on 'Grant'
+  - goto 2nd browser session and click 'Run all' again notice again the error message, that the user needs usage permission on database
+  - goto 1st browser session and click on 'Default' - 'Permissions' and grant 'hugo@...' 'Usage'
+  - goto 2nd browswer session and click again 'Run all'
+  - Notice, that the query succeeds now, after he/she was granted 'Usage' on database and 'Select' on table
 
 
+### create a gold table filter rows, mask columns
