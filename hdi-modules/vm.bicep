@@ -58,7 +58,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01'={
   location: location
   properties:{
     hardwareProfile: {
-       vmSize: 'Basic_A2'
+       vmSize: 'Standard_A2_v2'
     } 
     storageProfile: {
       osDisk: {

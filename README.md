@@ -8,15 +8,17 @@
 
 ### Clone the Repo
 ---
-- Go to https://github.com/mipcips/https://github.com/mipcips/ossspark-to-adb and clone the repo to a local directory either on Windows WSL or a Linux/MacOs workstation
+- Go to https://github.com/mipcips/https://github.com/mipcips/ossspark-to-adb and clone the repo to a directory on your workstation either on Windows WSL or a Linux/MacOs workstation
 - CD into the newly created directory and open VSCode by typing code .
+<br />
+<br />
 
-
-### Install Lab Environment
+### Install Lab Environment (60 min)
 ---
 
-> in order for the next part to work, you have to be logged in (via azure-cli) to the subscription you want to install the lab environment into. the lab environment is going to be installed into one resource group. 
+> in order for the next part to work, you have to be logged in (via azure-cli) to the subscription you want to install the lab environment into. You need to have at least contributor permission and user access administrator on the subscription. The lab environment is going to be installed into one resource group. Note, that for successful deployment of the cluster you'd need 16 HDInsight vCores available in the region of your choice. 
 
+- open a command prompt (or use the one from VsCode) and login to your subscription (az login - az account set -s 'subscription name')
 - click on /helper-scripts and open 'delete-and-createresgroups.sh'. Edit the the name of the resource group and its location as well as the password at the top of the file. Currently it is set to 'westus' and 'rg-wus-hditoadb'. Adjust these to your preference. The password is going to be the password for SQL Server, HDInsight clusteradmin and VM. 
 
 - now open a command prompt and execute 'bash helper/delete-and-createresgroups.sh'. This script deletes the resource group, with the name, you set previously, creates it anew and starts the deployment of the lab environment.
@@ -36,7 +38,8 @@
   - open file and then click next until the installation starts
   - on the last dialog of the installation click 'Launch Git Bash', clear the check mark on 'View Release Notes'
   - and click 'Finish'
-
+<br />
+<br />
 - clone this repo by 
   - going to 'https://github.com/mipcips'
   - click on 'ossspark-to-adb'
@@ -57,7 +60,7 @@
 
 - the notebook in question you find in 'notebooks/hdi/ossspark-toadb-hdipart-lab1.ipynb'. Make sure, that you're logged on to the VM. You need to be working in the VNet where the cluster is.
 
-- open Edge and open ambari by entering https://'clustername'-int.azurehdinsight.net. login credentials are tdadmin and the password, you configured in the helper script earlier
+- open Edge and open ambari by entering https://'clustername'-int.azurehdinsight.net. (you find the url to ambari in 'Resource Group' - 'hdi01hditoadb-dev' - 'URL'. copy the url and add an '-int' behind the '-dev') login credentials are tdadmin and the password, you configured in the helper script earlier
 
 - open a connection to Jupyter by opening a new tab in the browswer and entering https://'clustername'-int.azurehdinsight.net/jupyter
 
@@ -74,10 +77,11 @@
 > After each of the cells have been run successfully, you should have census data 'population by county' in the cluster folder '/example/popbycorc' as an orc file. You could verify by going to the ssh session to the head node, you created earlier and then entering 'hdfs dfs -ls /example'. 
 
 - to create a Hive table, open either beeline in the ssh session to the headnode or Hive view 2 from Ambari
-- execute the hive script '/notebooks/hdi/create-table.hql'
+- execute the hive script, which you find here: '/notebooks/hdi/create-table.hql'
 
 > if you get an access denied error message, especially when you wanted to create the table, the hive user doesn't have the necessary permissions. In order to permit the hive user enter the following command in the ssh session to the head node 'hdfs dfs -chown -R hive:Hadoop /example' 
-
+<br />
+<br />
 
 ### Databricks Part
 ---
@@ -94,19 +98,26 @@ In this lab, you will create a databricks cluster, connect it to the storage acc
   - in Azure Portal, in your Resource Group, click on 'hivedbhditoadbdev'
   - click on 'Connection strings' on the left
   - click on the 'JDBC' tab; copy everything up to and excluding user=...
-- attach the notebook to the newly created cluster and run it. The notebook is going to create a bash script file in '/databricks/scripts/' named 'external-metastore.sh' 
+- attach the notebook to the newly created cluster and run it. The notebook is going to create a bash script file in '/databricks/scripts/' named 'external-metastore.sh'. This bash script is going to set a few hive variables and download the needed hive jars with the correct version
 - from the second executed cell, copy the path contents
 - go to your cluster and click 'Edit' in the right upper corner
 - open 'Advanced options'
 - click the 'Init Scripts' tab
 - copy the whole path, that you copied, after dbfs:/ then delete the second occurence of dbfs:/ off the string
 - click 'Add'
+- to set the cluster configuration to connect to the blob storage of the HDInsight cluster as well as the target data lake gen 2 account do the following:
+  - go to the cluster and click 'Edit' to edit its configuration (right upper corner)
+  - open 'Advanced Options' and on the 'Spark' tab in the 'spark config' box, enter the following to key value pairs:
+    - fs.azure.account.key.'dlg2 storage accountname'.dfs.core.windows.net 'account key for blob storage account'
+    - fs.azure.account.key.'blob storage account name of hdinsight cluster'.blob.core.windows.net 'account key for blob storage account'
+    - (be sure to have just one blank between key and value)
 - click 'Confirm and restart'
 
 > the cluster restarts and loads the necessary jar files from maven as well as sets its configuration to point to the hive metastore of the HDI cluster
 
 - import the notebook 'notebooks/hdi-to-adb-lab2.dbc'
 - open it and attach it to the cluster
+- set the storageAccountName to the storage account name of the HDInsight cluster: sa...; and then the storageAcctKey to the account key of the storage account (to be found in portal)
 - run the first cell to check the connection to the Hive metastore server (should read something like connection succeeded)
 - in the second cell, you have to storage account name and access key (you get all these values from the Azure Portal and the storage account in your resource group)
 
