@@ -117,9 +117,14 @@ In this lab, you will create a databricks cluster, connect it to the storage acc
 
 - import the notebook 'notebooks/hdi-to-adb-lab2.dbc'
 - open it and attach it to the cluster
-- set the storageAccountName to the storage account name of the HDInsight cluster: sa...; and then the storageAcctKey to the account key of the storage account (to be found in portal)
+- set the storageAccountName int the wasb url to the correct one if necessary (to be found in portal)
+- do the same for the data lake gen 2 account
 - run the first cell to check the connection to the Hive metastore server (should read something like connection succeeded)
-- in the second cell, you have to storage account name and access key (you get all these values from the Azure Portal and the storage account in your resource group)
+- run the cells on by one
+- notice that it is connected to the hive metastore of the HDInsight cluster
+- notice that the new tables created are created in the HDInsight metastore.
+- make sure, that you can see the same from the 'Data' menue of Databricks
+- Congratulations !
 
 
 
@@ -146,7 +151,7 @@ In this lab, you will create a databricks cluster, connect it to the storage acc
    
 
 ---
-
+> at this point, we don't need the HDInsight cluster anymore, so to save costs, please go to the Azure portal and delete the HDInsight cluster, as well as the virtual machine.
 ---
 
 # Ranger Module Labs
@@ -167,25 +172,60 @@ In this lab, you will create a databricks cluster, connect it to the storage acc
   - Autoscaling: unchecked
   - Workers: 1
 - click 'Create Cluster'
-- add a second user to the workspace p.ex. 'hugo' (needs to be existing in AAD)
-  - go to 'Settings' - 'Admin Console' - 'Users' - 'Add User' and enter the upn of the newly added user
-  - for the newly added user check 'Workspace Access' and 'Databricks SQL Access' (don't check 'Allow unrestricted cluster creation' and 'Admin')
-  - either give this new user then Reader permissions to the Resource Group or give him/her the ADB workspace url
-  - in a new private/incognito session of the browser login as this user to the workspace by either going to https://portal.azure.com and entering the password or entering the ADB workspace url in the browser address input box
-  - in this 2nd browser session click in 'Data Science Engineering' on 'SQL'
-  - click on 'SQL Warehouses' and here click on 'Start' and wait for the warehouse to be started
+- add a second user to the workspace, which you would have had to create before in tenant of your subscription p.ex. 'hugo' (needs to be existing in AAD)
+- go to 'Settings' - 'Admin Console' - 'Users' - 'Add User' and enter the upn of the newly added user
+- for the newly added user check 'Workspace Access' and 'Databricks SQL Access' (don't check 'Allow unrestricted cluster creation' and 'Admin')
+- either give this new user then Reader permissions to the Resource Group or give him/her the ADB workspace url
+- in a new private/incognito session of the browser login as this user to the workspace by either going to https://portal.ure.com and entering the password or entering the ADB workspace url in the browser address input box
+- in this 2nd browser session click in 'Data Science Engineering' on 'SQL'
+- click on 'SQL Warehouses' and here click on the 'Starter Warehouse', click on 'Edit' and change the cluster size to 2X-Small (4DBU) and click 'Save'
+- click on 'Start' to start the warehouse
 <br />
 <br />
     
 ### Create a table and verify access, grant access
 ---
+- import the notebook Table-Security-Lab1
+- execute the notebook cell by cell and notice that you created a table
+- at the end a new managed table named 'default.popbycountyhhive' is created
+---
+- go to the 2nd session
+- click on 'SQL Editor' to get to the new query screen
+- enter the query 'select * from default.popbycountyhhive' and notice the error message: 'User does not have permission SELECT on table 'default'.'popbycountyhhive'
+---
+- go to the 1st session
+- run the cell with the command 'Grant Select on default.popbycountyhhive to users
+---
+- go to the 2nd session
+- click again on 'Run All'
+- notice the error message changed to 'User does not have permission USAGE on database 'default'
+---
+- go to 1st session
+- enter/execute cell with 'grant usage on database default to users
+---
+- go to 2nd session
+- click on 'Run ALL' and notice the query runs successful
+- Congratulations !
+
   
-  - click on 'Query' and enter 'Select * from silver' -> notice the error message "User does not have permission SELECT on table 'default'.'silver', which was expected
-  - in the 1st browser session click on 'Data' - 'silver' - 'Permissions', then click on 'Grant' in the dialog in the input box ('type to add...') add hugo@... and check 'SELECT', click on 'Grant'
-  - goto 2nd browser session and click 'Run all' again notice again the error message, that the user needs usage permission on database
-  - goto 1st browser session and click on 'Default' - 'Permissions' and grant 'hugo@...' 'Usage'
-  - goto 2nd browswer session and click again 'Run all'
-  - Notice, that the query succeeds now, after he/she was granted 'Usage' on database and 'Select' on table
 
+### Row Level Permissions
+---
+- go to 1st session and create a group 'Nevadans' and add Hugo (the user you added earlier)
+- enter/execute the command 'Revoke select on default.popbycountyhhive from users'
+---
+- go to 2nd session and click 'Run All' and notice the expected error message
+---
+- go to 1st session and execute the next cell (18) - create view...(19) and grant select...(20)
+---
+- go to 2nd session and execute the query 'select * from default.popfornevadans' and notice, that since hugo is in nevadans he's only shown records from Nevada
+- Congratulations !
 
-### create a gold table filter rows, mask columns
+### Masking columns
+---
+- go to 1st session
+- execute (32) and (33)
+---
+- go to 2nd session
+- execute 'select * from default.redactsracefornevadans' and notice that the column Race is redacted
+- Congratulations
