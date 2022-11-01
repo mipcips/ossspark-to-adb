@@ -154,6 +154,9 @@ In this lab, you will create a databricks cluster, connect it to the storage acc
 > at this point, we don't need the HDInsight cluster anymore, so to save costs, please go to the Azure portal and delete the HDInsight cluster, as well as the virtual machine.
 ---
 
+<br/>
+<br/>
+
 # Ranger Module Labs
 
 ## Lab 1 Table Access Control in Databricks
@@ -229,3 +232,25 @@ In this lab, you will create a databricks cluster, connect it to the storage acc
 - go to 2nd session
 - execute 'select * from default.redactsracefornevadans' and notice that the column Race is redacted
 - Congratulations
+
+<br/>
+<br/>
+
+# Synapse Spark Module Labs
+
+
+## If not done so already goto 'Download data by executing a Notebook'
+
+## Synapse Workspace
+
+* create synapse workspace w. dlg2 account
+
+## copy hive to synapse via pipelines
+
+* add synapse mi storage blob contributor to hdi storage account
+* add new filesystem to synapse home dlg2 account
+* create linked service to hdi storage account blob storage
+* create pipline with copy activity from hdi blob to fs synapse
+
+## copy hive to synapse via spark pools
+
