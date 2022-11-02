@@ -101,3 +101,12 @@ module adb 'hdi-modules/adb.bicep' = {
     vnetId: vnets.outputs.vnetid
   }
 }
+
+module syn 'hdi-modules/syn.bicep' = {
+  name: 'synwshditoadb'
+  params: {
+    adminPassword: pw
+    baseName: baseName
+    location: location
+  }
+}
