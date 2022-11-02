@@ -239,18 +239,48 @@ In this lab, you will create a databricks cluster, connect it to the storage acc
 # Synapse Spark Module Labs
 
 
-## If not done so already goto 'Download data by executing a Notebook'
+## If not done so already goto 'Download data by executing a Notebook' (the first lab)
 
 ## Synapse Workspace
 
-* create synapse workspace w. dlg2 account
+* a synapse workspace with an should have already been created for you. make sure by going to the Azure portal and the resource group (rg-eus-hditoadb) and lookging for the Synapse resource (synws-eus-hditoadb)
 
 ## copy hive to synapse via pipelines
 
-* add synapse mi storage blob contributor to hdi storage account
+* add Storage Blob Bontributor role to the managed identity of the Synapse workspace to hdi storage account (saguxxxx)
+  * go to storage account for hdi cluster (should be saxxx)
+  * go to IAM > Add Role Assignment > Storage Blob Data Contributor > Next > Select Members > synws-hditoadb-dev > Select > Review + assign > Review + Assign
 * add new filesystem to synapse home dlg2 account
-* create linked service to hdi storage account blob storage
+  * go to Synapse storage account (syndlg2xxxx)
+  * Storage Browser > Blob Containers > Add Container > 'fsdest' > Create 
+* create linked service to hdi storage account blob storage in synapse
+  * in Azure Portal go to Synapse (synws-hditoadb-dev) > Open > Manage > Linked Services > + New > Azure Blob Storage > 'hdiblobls' > System Assigned Managed Identity > Select Subscription > Storage Account Name 'saxxx' > Test Connection > Create
 * create pipline with copy activity from hdi blob to fs synapse
+  * Integrate > + Pipeline > 'plHdiToSynapse'
+  * drag Copy Data Activity to Canvas > Name 'CopyHiveToSyn'
+    * Source > + New > Azure Blob Storage > Continue > ORC > Continue > Name 'SourceOrc', Linked Service 'hdiblobls' > Browse: 'hdi01hditoadb-dev/example/popbyorc > OK > OK > Wildcard file path > Sink > + New > Azure Data Lake Storage Gen 2 > Continue > Parquet > Continue > Name: 'destpq', Linked Service: 'synws-hditoadb-dev ...' > Browse > fsdest > Directory: 'dest.parquet' > OK > None > OK 
+    * Publish All > Publish
+    * Debug Run -> Succeeded : Verify in storage account
+* Congrats !
+<br/>
+<br/>
+## Run Spark Application
+---
 
-## copy hive to synapse via spark pools
+### Create Spark Pool
+* go to Synapse Studio
+* go to Manage Hub > Apache Spark Pools
+* + New > Name: 'hditospark', Node Size: Small, Autoscale: Enabled 3 to 4 > Review + Create > Create
+
+
+### Run Application
+* go to Develop Hub
+* + Import > (repo) /notebooks/LegacyContext.ipynb
+* Select Spark Pool : 'hditospark', Notbook Language: 'PySpark'
+* Run Cells one by one (Shift + Enter)
+  * running the first cell might take around 3mins, since the spark cluster is spun up
+  * watch the error message in the 3rd cell (sc = ...) : Cannot run multiple spark contexts
+  * change the code in cell 3 to 'sc = SparkContext.getOrCreate(conf=conf) and delete cell 7 (sc.stop()) since you should not delete the SparkContext, since this will affect all other applications
+  * notice that all cells are runnable
+  * Congrats !
 
